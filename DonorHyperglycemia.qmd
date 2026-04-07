@@ -77,3 +77,12 @@ chisq.test(table(DonorHyperglycemia$high_risk, DonorHyperglycemia$delayed_fn))
 
 ```
 
+# HEMO INSTABILITY 
+```{r}
+table(DonorHyperglycemia$d_genderf, DonorHyperglycemia$hemo_instability)
+
+test_result <- chisq.test(table(DonorHyperglycemia$hemo_instability, DonorHyperglycemia$d_genderf))
+print(test_result)
+
+```
+
