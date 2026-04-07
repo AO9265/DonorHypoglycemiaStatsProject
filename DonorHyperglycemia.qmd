@@ -21,22 +21,45 @@ DonorHyperglycemia <- read_csv("DonorHyperglycemia.csv")
 DonorHyperglycemia <- DonorHyperglycemia |>
   mutate(high_risk = if_else(donorrisk > 1.3, "yes", "no"))
 ```
+
+Hypothesis testing for relationship between donor demographics and delayed liver graft function. All tests are compared to a significance level of 0.5.
+
 ## Age Hypothesis Test
 
 ```{r}
 #| echo: false
-t.test(r_age ~ delayed_fn, data = DonorHyperglycemia)
+t.test(d_age ~ delayed_fn, data = DonorHyperglycemia)
 ```
 
-The null hypothesis is that the mean ages of both groups are equal, while the alternative hypothesis is that the mean ages are not equal. The test statistic follows a t distribution with 210.42 degrees of freedom. The p-value is 0.1065, which is above the significance level of 0.05. Therefore, we fail to reject the null hypothesis of the mean ages being the same, regardless of whether or not there was delayed liver graft function. 
+The null hypothesis is that the mean ages of both groups are equal, while the alternative hypothesis is that the mean ages are not equal. The test statistic follows a t distribution with 234.05 degrees of freedom. The p-value is 0.2007, which is above the significance level of 0.05. Therefore, we fail to reject the null hypothesis of the mean donor ages being the same, regardless of whether or not there was delayed liver graft function. 
 
 ## Sex Hypothesis Test:
 
 The null hypothesis is that there is no relationship between sex and Delayed Liver Graft Function. The alternative hypothesis is that there is a relationship. 
 ```{r}
 #| echo: false
-chisq.test(table(DonorHyperglycemia$r_genderf, DonorHyperglycemia$delayed_fn))
+chisq.test(table(DonorHyperglycemia$d_genderf, DonorHyperglycemia$delayed_fn))
 ```
-The test statistic 0.41952 follows a Chi-squared distribution with one degree of freedom. The p-value of 0.5172 is greater than the significance level of 0.5, so we fail to reject the null hypothesis that there is no relationship. There is insufficient evidence to support there being a relationship between gender and delayed liver graft function.
+The test statistic 0.47116 follows a Chi-squared distribution with one degree of freedom. The p-value of 0.5172 is greater than the significance level of 0.4925, so we fail to reject the null hypothesis that there is no relationship. There is insufficient evidence to support there being a relationship between donor gender and delayed liver graft function.
 
+
+## Cause of Death Hypothesis Test
+
+The null hypothesis is that there is no relationship between donor cause of death and delayed liver graft function. The alternative hypothesis is that there is a relationship.
+```{r}
+#| echo: false
+table(DonorHyperglycemia$d_cod, DonorHyperglycemia$delayed_fn)
+fisher.test(table(DonorHyperglycemia$d_cod, DonorHyperglycemia$delayed_fn))
+```
+The p-value under a fisher's exact test is 0.08737 which is greater than the significance level of 0.5, therefore we fail to reject the null. There is insufficient evidence to support a relationship between donor cause of death and delayed liver graft function
+
+
+## Race Hypothesis Test
+
+The null hypothesis is that there is no relationship between donor whiteness and delayed liver graft function. The alternative hypothesis is that there is a relationship. 
+```{r}
+#| echo: false
+chisq.test(table(DonorHyperglycemia$d_caucasian, DonorHyperglycemia$delayed_fn))
+```
+The test statistic follows a chi-squared distribution with one degree of freedom. The p-value of 0.9344 is greater than the significance level of 0.5, therefore we fail to reject the null hypothesis. There is insufficient evidence to support a relationship between donor whitenesss and delayed liver graft function.
 
