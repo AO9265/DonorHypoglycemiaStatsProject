@@ -8,18 +8,23 @@ editor: source
 ## Running Code
 
 ```{r}
+#| echo: false
+#| error: false
+#| warning: false
 library (dplyr)
 library(readr)
 DonorHyperglycemia <- read_csv("DonorHyperglycemia.csv")
 ```
 
 ```{r}
-1 + 1
+#| echo: false
+DonorHyperglycemia <- DonorHyperglycemia |>
+  mutate(high_risk = if_else(donorrisk > 1.3, "yes", "no"))
 ```
-
+## Age Hypothesis Test
 
 ```{r}
 #| echo: false
-2 * 2
+t.test(r_age ~ delayed_fn, data = DonorHyperglycemia)
 ```
 
