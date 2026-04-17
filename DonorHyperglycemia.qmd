@@ -86,3 +86,10 @@ print(test_result)
 
 ```
 
+```{r}
+table(DonorHyperglycemia$high_risk, DonorHyperglycemia$hemo_instability)
+
+test_result <- chisq.test(table(DonorHyperglycemia$hemo_instability, DonorHyperglycemia$high_risk))
+print(test_result)
+```
+
