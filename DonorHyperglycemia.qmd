@@ -88,4 +88,14 @@ print(test_result)
 
 ```
 
+## Logistic Regression
+
+```{r}
+m1 <- glm(delayed_fn ~ d_age + d_cod + d_caucasian + d_genderf + donorrisk + sodium, 
+          data = DonorHyperglycemia,
+          family = "binomial")
+
+summary(m1)
+```
+
 
