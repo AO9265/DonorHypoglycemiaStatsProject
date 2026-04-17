@@ -96,7 +96,6 @@ test_result <- chisq.test(table(DonorHyperglycemia$hemo_instability, DonorHyperg
 print(test_result)
 ```
 
-=======
 ## Logistic Regression
 
 ```{r}
@@ -108,3 +107,4 @@ summary(m1)
 ```
 
 hi this is a test
+this is another test
