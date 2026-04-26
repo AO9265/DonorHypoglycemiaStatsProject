@@ -99,13 +99,32 @@ print(test_result)
 ## Logistic Regression
 
 ```{r}
-m1 <- glm(delayed_fn ~ d_age + d_cod + d_caucasian + d_genderf + donorrisk + sodium, 
+m1 <- glm(delayed_fn ~ d_age + d_cod + d_caucasian + d_genderf + donorrisk, 
           data = DonorHyperglycemia,
           family = "binomial")
 
 summary(m1)
 ```
+```{r}
+library(ggplot2)
+ggplot(DonorHyperglycemia, aes(x = donorrisk, y = as.numeric(delayed_fn))) +
+  geom_point(alpha = 0.5) +  
+  stat_smooth(method = "glm", 
+              method.args = list(family = "binomial"), 
+              se = TRUE) +   
+  labs(title = "Effect of Donor Risk on Delayed Function",
+       x = "Donor Risk In",
+       y = "Predicted Probability of Delayed Function")
+```
+```{r}
+library(ggplot2)
+ggplot(DonorHyperglycemia, aes(x = d_age, y = as.numeric(delayed_fn))) +
+  geom_point(alpha = 0.5) +  
+  stat_smooth(method = "glm", 
+              method.args = list(family = "binomial"), 
+              se = TRUE) +   
+  labs(title = "Effect of Donor Risk on Delayed Function",
+       x = "Donor Age",
+       y = "Predicted Probability of Delayed Function")
+```
 
-hi this is a test
-this is another test
-greetings 
