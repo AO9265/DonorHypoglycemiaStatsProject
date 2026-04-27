@@ -98,6 +98,21 @@ print(test_result)
 
 ## Logistic Regression
 
+
+```{r}
+#| echo: false
+DonorHyperglycemia$d_cod <- as.factor(DonorHyperglycemia$d_cod)
+
+DonorHyperglycemia$delayed_fn <- as.factor(DonorHyperglycemia$delayed_fn)
+
+DonorHyperglycemia$d_genderf <- as.factor(DonorHyperglycemia$r_genderf)
+
+DonorHyperglycemia$d_caucasian <- as.factor(DonorHyperglycemia$d_caucasian)
+```
+
+
+
+
 ```{r}
 m1 <- glm(delayed_fn ~ d_age + d_cod + d_caucasian + d_genderf + donorrisk, 
           data = DonorHyperglycemia,
@@ -105,6 +120,7 @@ m1 <- glm(delayed_fn ~ d_age + d_cod + d_caucasian + d_genderf + donorrisk,
 
 summary(m1)
 ```
+
 ```{r}
 library(ggplot2)
 ggplot(DonorHyperglycemia, aes(x = donorrisk, y = as.numeric(delayed_fn))) +
