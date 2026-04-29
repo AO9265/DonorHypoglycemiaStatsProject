@@ -124,18 +124,34 @@ ggplot(DonorHyperglycemia, aes(x = donorrisk, y = as.numeric(delayed_fn))) +
               method.args = list(family = "binomial"), 
               se = TRUE) +   
   labs(title = "Effect of Donor Risk on Delayed Function",
-       x = "Donor Risk In",
+       x = "Donor Risk Index",
+       y = "Predicted Probability of Delayed Function")
+```
+
+```{r}
+library(ggplot2)
+ggplot(DonorHyperglycemia, aes(x = as.numeric(d_cod), y = as.numeric(delayed_fn != 1))) + 
+  geom_jitter(height = 0.05, width = 0.2, alpha = 0.5) +
+  stat_smooth(method = "glm", 
+              method.args = list(family = "binomial"), 
+              se = TRUE) +
+  scale_x_continuous(breaks = 1:4, labels = c("CVA" , "Head Trauma", "Anoxia" , "Other")) + 
+  labs(title = "Effect of Donor Risk (d_cod) on Delayed Function",
+       x = "Donor COD Level (1 = Reference)",
        y = "Predicted Probability of Delayed Function")
 ```
 ```{r}
 library(ggplot2)
-ggplot(DonorHyperglycemia, aes(x = d_age, y = as.numeric(delayed_fn))) +
-  geom_point(alpha = 0.5) +  
-  stat_smooth(method = "glm", 
+ggplot(DonorHyperglycemia, aes(x = d_cod, y = as.numeric(delayed_fn) - 1)) +
+  geom_jitter(alpha = 0.5, height = 0.05, width = 0.2) +  
+  stat_smooth(aes(group = 1), 
+              method = "glm", 
               method.args = list(family = "binomial"), 
               se = TRUE) +   
+  
   labs(title = "Effect of Donor Risk on Delayed Function",
-       x = "Donor Age",
+       x = "Cause of Death",
        y = "Predicted Probability of Delayed Function")
 ```
+
 
