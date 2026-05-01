@@ -1,11 +1,9 @@
 ---
-title: "DonorHyperglycemiaStatsProject"
+title: "Investigation of Associations Between Donor Risk Index Variables and Delayed Liver Graft Function"
+author: "Kameran Reese, Naomi Taylor, Andrea Owusu, Maile Bateman"
 format: pdf
 editor: source
 ---
-
-
-## Running Code
 
 ```{r}
 #| echo: false
@@ -16,28 +14,36 @@ library(readr)
 DonorHyperglycemia <- read_csv("DonorHyperglycemia.csv")
 ```
 
+## Introduction
 
-## Logistic Regression
+## Methods
 
+## Results
 
 ```{r}
 #| echo: false
+#| error: false
+#| warning: false
 DonorHyperglycemia$d_cod <- as.factor(DonorHyperglycemia$d_cod)
 
-```
-
-
-
-
-```{r}
 m1 <- glm(delayed_fn ~ d_age + d_cod + d_caucasian + d_genderf + donorrisk, 
           data = DonorHyperglycemia,
           family = "binomial")
 
-summary(m1)
+coefficients <- c("Intercept", "Age", "Cause of Death: Head Trauma", "Cause of Death: Anoxia", "Cause of Death: Other", "Caucasian", "Gender", "Donor Risk Index")
+estimate <- c(-2.106469, -0.005237, -0.312951, -0.255460, 0.763904, -0.013151, -0.094485, 1.046880)
+pvalue <- c(0.000797, 0.528224, 0.300045, 0.431517, 0.176776, 0.961797, 0.702822, 0.009538)
+
+my_table <- data.frame(Coefficients = coefficients, Estimate = estimate, PValue = pvalue)
+
+
+print(my_table)
 ```
 
 ```{r}
+#| echo: false
+#| error: false
+#| warning: false
 library(ggplot2)
 ggplot(DonorHyperglycemia, aes(x = donorrisk, y = as.numeric(delayed_fn))) +
   geom_point(alpha = 0.5) +  
@@ -50,6 +56,9 @@ ggplot(DonorHyperglycemia, aes(x = donorrisk, y = as.numeric(delayed_fn))) +
 ```
 
 ```{r}
+#| echo: false
+#| error: false
+#| warning: false
 library(ggplot2)
 ggplot(DonorHyperglycemia, aes(x = as.numeric(d_cod), y = as.numeric(delayed_fn != 1))) + 
   geom_jitter(height = 0.05, width = 0.2, alpha = 0.5) +
@@ -62,6 +71,9 @@ ggplot(DonorHyperglycemia, aes(x = as.numeric(d_cod), y = as.numeric(delayed_fn 
        y = "Predicted Probability of Delayed Function")
 ```
 ```{r}
+#| echo: false
+#| error: false
+#| warning: false
 library(ggplot2)
 ggplot(DonorHyperglycemia, aes(x = d_cod, y = as.numeric(delayed_fn) - 1)) +
   geom_jitter(alpha = 0.5, height = 0.05, width = 0.2) +  
@@ -75,4 +87,5 @@ ggplot(DonorHyperglycemia, aes(x = d_cod, y = as.numeric(delayed_fn) - 1)) +
        y = "Predicted Probability of Delayed Function")
 ```
 
+## Discussion
 
