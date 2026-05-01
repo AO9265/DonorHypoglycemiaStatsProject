@@ -11,14 +11,39 @@ editor: source
 #| warning: false
 library (dplyr)
 library(readr)
+library(knitr)
 DonorHyperglycemia <- read_csv("DonorHyperglycemia.csv")
 ```
 
 ## Introduction
 
+
+
+
 ## Methods
 
+
+
+
 ## Results
+
+::: {.callout-note}
+## Logistic Regression Model
+$$
+\begin{aligned}
+\hat{y}_i =\;& -2.106469 
+- 0.005237(\text{donor age}_i) \\
+&- 0.312951(\text{donor cause of death}_i=\text{head trauma}) \\
+&- 0.255460(\text{donor cause of death}_i=\text{anoxia}) \\
+&+ 0.763904(\text{donor cause of death}_i=\text{other}) \\
+&- 0.013151(\text{donor race}_i=\text{caucasian}) \\
+&- 0.094485(\text{donor sex}_i=\text{female}) \\
+&+ 1.046880(\text{donor risk index}_i)
+\end{aligned}
+$$
+
+$\hat{y}_i$ represents the predicted log-odds of delayed liver graft function.
+:::
 
 ```{r}
 #| echo: false
@@ -30,15 +55,35 @@ m1 <- glm(delayed_fn ~ d_age + d_cod + d_caucasian + d_genderf + donorrisk,
           data = DonorHyperglycemia,
           family = "binomial")
 
-coefficients <- c("Intercept", "Age", "Cause of Death: Head Trauma", "Cause of Death: Anoxia", "Cause of Death: Other", "Caucasian", "Gender", "Donor Risk Index")
-estimate <- c(-2.106469, -0.005237, -0.312951, -0.255460, 0.763904, -0.013151, -0.094485, 1.046880)
-pvalue <- c(0.000797, 0.528224, 0.300045, 0.431517, 0.176776, 0.961797, 0.702822, 0.009538)
+coefficients <- c("Age", "Cause of Death: Head Trauma", "Cause of Death: Anoxia", "Cause of Death: Other", "Caucasian", "Female", "Donor Risk Index")
+estimate <- c(-0.005237, -0.312951, -0.255460, 0.763904, -0.013151, -0.094485, 1.046880)
+pvalue <- c(0.528224, 0.300045, 0.431517, 0.176776, 0.961797, 0.702822, 0.009538)
+odds_ratio <- c(exp(-0.005237), exp(-0.312951), exp(-0.255460), exp(0.763904), exp(-0.013151), exp(-0.094485), exp(1.046880))
 
-my_table <- data.frame(Coefficients = coefficients, Estimate = estimate, PValue = pvalue)
+my_table <- data.frame("Donor Variable" = coefficients, "Estimate" = estimate, "Odds Ratio" = odds_ratio, "P Value" = pvalue)
 
-
-print(my_table)
+kable(my_table,
+      digits = 3,
+      align = c("l","r","r","r"),
+      caption = "Logistic Regression Model Coefficients",
+      booktabs = TRUE)
 ```
+
+**Interpretation:**
+
+The intercept term -2.106469, representing the log odds of a recipient experiencing delayed liver graft function from a non-white male donor of age zero who's cause of death was cerebrovascular accident, is not a relevant real-world scenario. 
+
+Donor Age: This model predicts a recipients log odds of having delayed liver graft function to decrease by 0.005237 given a one year increase in age of their donor, while controlling for all other variables. In other words, the recipient is predicted to have 0.9947767 times the odds of experiencing delayed liver graft function given a one year increase in age of their donor, while controlling for all other variables. The corresponding p-value for this coefficient, the probability of seeing this predicted change in log odds for a one year change in age given that the true population change in log odds is zero, is 0.528224. Evaluated against the significance level of 0.05, we fail to reject the null hypothesis that the true slope value is zero. We do not have sufficient statistical evidence to support there being an association between donor age and delayed liver graft function.
+
+Donor Cause of Death: This model predicts a recipients log odds of having delayed liver graft function to change by -0.312951 if the donor's cause of death was head trauma, -0.255460 if the donor's cause of death was anoxia, and 0.763904 if the donor died of some other cause, compared to a recipient who's donor died of cerebrovascular accident, while controlling for all other variables. The recipient is predicted to have 0.7312857, 0.7745601, or 2.14664 times the odds of experiencing delayed liver graft function given the donor cause of death was head trauma, anoxia, or other, respectively. The corresponding p-value for this coefficient, the probability of seeing this predicted change in log odds given that donor cause of death does not truly change the log odds, are 0.528224, 0.300045, and 0.176776, respectively. Evaluated against the significance level of 0.05, we fail to reject the null hypothesis that the true slope value is zero. We do not have sufficient statistical evidence to support there being an association between donor cause of death and delayed liver graft function. 
+
+Donor Whiteness: This model predicts a recipients log odds of having delayed liver graft function to be 0.013151 lower for patients with caucasian donors compared to patients with non-caucasian donors, while controlling for all other variables. In other words, the recipient is predicted to have 0.9869351 times the odds of experiencing delayed liver graft function if their donor is caucasian versus non-caucasian, while controlling for all other variables. The corresponding p-value for this coefficient, the probability of seeing this predicted change in log odds of delayed liver graft function for caucasian donors given that the true population difference in log odds is zero, is 0.961797. Evaluated against the significance level of 0.05, we fail to reject the null hypothesis that the true slope value is zero. We do not have sufficient statistical evidence to support there being an association between donor gender and delayed liver graft function.
+
+Donor Gender: This model predicts a recipients log odds of having delayed liver graft function to be 0.094485 lower for patients with female donors compared to patients with male donors, while controlling for all other variables. In other words, the recipient is predicted to have 0.9098414 times the odds of experiencing delayed liver graft function if their donor is female versus male, while controlling for all other variables. The corresponding p-value for this coefficient, the probability of seeing this predicted change in log odds of delayed liver graft function for female donors given that the true population difference in log odds is zero, is 0.702822. Evaluated against the significance level of 0.05, we fail to reject the null hypothesis that the true slope value is zero. We do not have sufficient statistical evidence to support there being an association between donor whiteness and delayed liver graft function.
+
+Donor Risk Index: This model predicts a recipients log odds of having delayed liver graft function to be 1.046880 higher given a one unit change in donor risk index, while controlling for all other variables. In other words, the recipient is predicted to have 2.848749 times the odds of experiencing delayed liver graft function given a one unit change in donor risk index, while controlling for all other variables. The corresponding p-value for this coefficient, the probability of seeing this predicted change in log odds of delayed liver graft function given that the true population slope in log odds is zero, is 0.009538. Evaluated against the significance level of 0.05, we reject the null hypothesis that the true slope value is zero. There is sufficient statistical evidence to support there being an association between donor risk index and delayed liver graft function.
+
+
 
 ```{r}
 #| echo: false
