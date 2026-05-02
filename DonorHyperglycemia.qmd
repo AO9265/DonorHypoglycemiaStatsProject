@@ -17,12 +17,23 @@ DonorHyperglycemia <- read_csv("DonorHyperglycemia.csv")
 
 ## Introduction
 
+When a new liver is introduced in a patient, there is an inherent compatibility risk between the recipient and the donor. It is imperative to the health of the recipient and success of the transplant to evaluate what characteristics are valid predictors associated with transplant success. The Donor Risk Index created by Dr. Susanna Feng at the University of California, San Francisco (Mataya et al., 2014), combines variables that may impact the compatibility and outcome of an orthotopic liver transplant to its recipient (Perez-Protto et al 2014). There are many ways to measure the success of a transplant and complications that can occur. A severe complication that can occur after the transplant takes place is the delayed function of the transplant (either initial failure to function or poor function), which can reduce graft survival. In our research, we evaluate the association of variables with the outcome of a recipient having delayed liver graft function. 
 
+A similarly-aimed study from 2014 used the independent predictors of; dialysis status, male gender, diabetes, end-stage renal disease, donor age, right donor nephrectomy, panel reactive antibodies, HLA mismatch, and cold ischemia time to determine the outcome of delayed liver graft function (Damodaran et al., 2021). This study found no association between these predictor variables and delayed liver graft function.
 
+In this analysis, we will evaluate the individual donor predictors included in this data that are typically used in calculation of the Donor Risk Index. The data does not include donor diabetes history, donor hypertension history, donation after circulatory death (DCD) status, donor weight, and donor serum creatinine levels that are also included in the calculation of a donor’s risk index value. Our goal is determining which liver graft donor predictors are associated with delayed liver graft function in the recipient? 
+
+The evaluated data is sourced from the Deceased Donor Hyperglycemia and Liver Graft Dysfunction, where dysfunction was defined as primary non-function as indicated by death or retransplant or liver graft dysfunction as indicated by aspartate aminotransferase level > 2000 units/liter or prosthrombin time > 16 seconds during the first postoperative week (Perez-Protto et al 2014). The donor predictors included in this data that we know to be related to the Donor Risk Index (DRI) are donor sex (a binary variable for female or not), race (a binary variable for caucasian or not), cause of death (1 = CVA, 2 = Head Trauma, 3 = Anoxia, 4 = Other), and continuous age in year. The donor risk index consists of these variables to create a numerical, continuous scale with the purpose of predicting transplant risk. 
+
+The data dictionary for the variables we used is as follows: 
+donorrisk:  Numerical continuous outputs for the Donor Risk Index 
+d_age:  Donor age in years
+d_cod : Donor cause of death stratified in 4 categories, 1=CVA(cerebral vascular accident), 2= head trauma,  3=anoxia, 4= other
+d_caucasian : race based on if the donor is caucasian or not. Discrete 1 = yes 0 = no
+d_genderf : gender based on if the donor is female or not. Discrete, 1 = female, 0 = male
+delayed_fn:  Delayed liver graft function, discrete0= no 1 = yes,
 
 ## Methods
-
-
 
 
 ## Results
@@ -89,6 +100,21 @@ Donor Risk Index: This model predicts a recipients log odds of having delayed li
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+**Model 1: Donor Risk Index**
+
+This model displays the probability of the binary outcome of Delayed Liver Graph Function based on the continuous predictor: Donor Risk Index.  A positive correlation is shown where as the Donor Risk Index score of the donor increases, the probability of delayed liver graft function increases as well. As the data range is narrow on the y-axis, the graph does not appear with the typical “s” logistic curve as the graph represents the nearly linear middle segment. The shaded region represents the 95% confidence interval for the fitted regression curve. The baseline risk for the younger donors is > 15% this displays evidence that age is not the only factor affecting delayed liver graft function.
 ```{r}
 #| echo: false
 #| error: false
@@ -104,6 +130,9 @@ ggplot(DonorHyperglycemia, aes(x = donorrisk, y = as.numeric(delayed_fn))) +
        x = "Donor Risk Index",
        y = "Predicted Probability of Delayed Function")
 ```
+
+**Model 3: Cause of death**
+This model displays the probability of the binary outcome of Delayed Liver Graph Function based on the categorical predictor of cause of death using categories; 1,2,3 or 4. The blue point represents the log-odds outcome converted into a probability bound between 0-1. Donors who died of Anoxia and Head trauma had the highest predicted probabilities of delayed liver graft function in recipients, with the lowest probability being the “other” / “4” category. The vertical blue line represents the 95% confidence interval around the predicted probabilities. There is overlap between all four intervals, which shows that the donor's cause of death has no statistical significance on delayed graft function. The categories of cause of death are discrete, so a continuous logistic line was not used to avoid making predictions between 0-1 1-2, 2-3, and 3-4 that had no real-world significance.
 
 ```{r}
 #| echo: false
@@ -127,6 +156,10 @@ ggplot(subset(DonorHyperglycemia, !is.na(d_cod) & !is.na(delayed_fn)), aes(x = d
        y = "Predicted Probability of Delayed Function") 
 
 ```
+
+**Model 3: Donor Race**
+
+This model displays the probability of the binary outcome of Delayed Liver Graph Function based on the binary predictor of gender, delegated as; Male (0) or Female (1). The blue point represents the estimated log-odds outcome converted into an average probability bound between 0-1. The variance between the probability of delayed liver graft function in male groups vs. female groups is minimal. The vertical blue line represents the 95% confidence interval around the predicted probabilities. The intervals overlap, which in addition to the high p-value shown in the logistic regression model summary, is evidence that the donor's biological sex has no statistical significance on delayed graft function. The categories of race are discrete, so a continuous logistic line was not used to avoid making predictions between 0 and 1 that had no real-world significance.
 
 ```{r}
 #| echo: false
@@ -181,6 +214,11 @@ ggplot() +
   ) 
 
 ```
+
+**Model 4: Donor Age**
+
+This model displays the probability of the binary outcome of Delayed Liver Graph Function based on the continuous numeric predictor: Age (in years)  A weak positive correlation is shown where as the age of the donor increases,the probability of delayed liver graft function increases slightly. This modest correlation is evidence that the effect of age alone on delayed graft function is small (from ages 0-80 the probability only increases by 10% over the whole lifetime). Similarly to the Donor Risk Index data, the range is even more narrow on the y-axis, so the graph does not appear with the “s” logistic curve as the graph represents the nearly linear middle segment. The shaded region represents the 95% confidence interval for the fitted regression curve. The baseline risk for the younger donors is also  > 15%: age is not the only factor affecting delayed liver graft function.
+
 ```{r}
 #| echo: false
 #| error: false
@@ -195,6 +233,11 @@ ggplot(DonorHyperglycemia, aes(x = d_age, y = as.numeric(delayed_fn))) +
        x = "Donor Age",
        y = "Predicted Probability of Delayed Function")
 ```
+
+**Model 5: Race: Caucasian or Not**
+
+This model displays the probability of the binary outcome of Delayed Liver Graph Function based on the binary predictor of race, delegated as; Caucasian(0) or Not Caucasian(1). The blue points representing the average probability are aligned with each other at ~ 25%. This  shows there is no statistical difference between the probability of delayed liver graft function between caucasian groups and non-caucasian groups. The vertical blue line represents the 95% confidence interval around the predicted probabilities. The intervals overlap in this model, showing low statistical significance. The categories of race are discrete, so a continuous logistic line was not used to avoid making predictions between x values 0 and 1 that hold no real-world significance.
+
 ```{r}
 #| echo: false
 #| error: false
@@ -241,7 +284,5 @@ ggplot() +
 
 ## Discussion
 
-
-
-Our analysis shows that out of all of the liver donor characteristic variables we tested for, we only found evidence of one statistically significant relationship, that being the one between donor risk index and delayed liver graft function. This is in spite of the fact that all of the other characteristics we tested for are varaibles used in the calculation of the donor risk index. The p-values associated with those variables, which were donor age, cause of death, race, and gender, were above our significance level of 0.05. However, this may be because some of those variables, such as gender and race, do not seem to have some obvious, direct relationship with liver function. This is especially apparent in the fact that our variable for race was binary, with the only categories being “Caucasian” and “not Caucasian,” which could be considered biased and reductive. Overall, the scope of our tests may have been limited by our lack of other donor-related variables. Our testing could have been strengthened by having other donor variables, specifically those that are used in calculating the donor risk index, such as history of diabetes, history of hypertension, and donation after circulatory death (DCD) status. Nonetheless, without being able to test for all of the variables used to calculate DRI, our ability to come to conclusions about which of those variables have statistically significant relationships with delayed liver graft function is extremely limited.
+Our analysis shows that out of all of the liver donor characteristic variables we tested for, we only found evidence of one statistically significant relationship, that being the one between donor risk index and delayed liver graft function. This is in spite of the fact that all of the other characteristics we tested for are variables used in the calculation of the donor risk index. The p-values associated with those variables, which were donor age, cause of death, race, and gender, were above our significance level of 0.05. However, this may be because some of those variables, such as gender and race, do not seem to have some obvious, direct relationship with liver function. This is especially apparent in the fact that our variable for race was binary, with the only categories being “Caucasian” and “not Caucasian,” which could be considered biased and reductive. Overall, the scope of our tests may have been limited by our lack of other donor-related variables. Our testing could have been strengthened by having other donor variables, specifically those that are used in calculating the donor risk index, such as history of diabetes, history of hypertension, and donation after circulatory death (DCD) status. Nonetheless, without being able to test for all of the variables used to calculate DRI, our ability to come to conclusions about which of those variables have statistically significant relationships with delayed liver graft function is extremely limited.
 
