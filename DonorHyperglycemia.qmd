@@ -47,14 +47,18 @@ $\hat{y}_i$ represents the predicted log-odds of delayed liver graft function.
 
 ```{r}
 #| echo: false
-#| error: false
-#| warning: false
 DonorHyperglycemia$d_cod <- as.factor(DonorHyperglycemia$d_cod)
 
 m1 <- glm(delayed_fn ~ d_age + d_cod + d_caucasian + d_genderf + donorrisk, 
           data = DonorHyperglycemia,
           family = "binomial")
+```
 
+
+```{r}
+#| echo: false
+#| error: false
+#| warning: false
 coefficients <- c("Age", "Cause of Death: Head Trauma", "Cause of Death: Anoxia", "Cause of Death: Other", "Caucasian", "Female", "Donor Risk Index")
 estimate <- c(-0.005237, -0.312951, -0.255460, 0.763904, -0.013151, -0.094485, 1.046880)
 pvalue <- c(0.528224, 0.300045, 0.431517, 0.176776, 0.961797, 0.702822, 0.009538)
@@ -90,12 +94,13 @@ Donor Risk Index: This model predicts a recipients log odds of having delayed li
 #| error: false
 #| warning: false
 library(ggplot2)
+
 ggplot(DonorHyperglycemia, aes(x = donorrisk, y = as.numeric(delayed_fn))) +
   geom_point(alpha = 0.5) +  
   stat_smooth(method = "glm", 
               method.args = list(family = "binomial"), 
               se = TRUE) +   
-  labs(title = "Effect of Donor Risk on Delayed Function",
+  labs(title = "Predicted Outcome of Donor Risk on Delayed Function",
        x = "Donor Risk Index",
        y = "Predicted Probability of Delayed Function")
 ```
@@ -105,14 +110,89 @@ ggplot(DonorHyperglycemia, aes(x = donorrisk, y = as.numeric(delayed_fn))) +
 #| error: false
 #| warning: false
 library(ggplot2)
-ggplot(DonorHyperglycemia, aes(x = as.numeric(d_cod), y = as.numeric(delayed_fn != 1))) + 
-  geom_jitter(height = 0.05, width = 0.2, alpha = 0.5) +
+library(Hmisc) # Required for mean_cl_boot
+
+# 1. Ensure d_cod is a factor with clean labels
+DonorHyperglycemia$d_cod <- factor(DonorHyperglycemia$d_cod, 
+                                   labels = c("CVA", "Head Trauma", "Anoxia", "Other"))
+
+# 2. Build the plot
+ggplot(subset(DonorHyperglycemia, !is.na(d_cod) & !is.na(delayed_fn)), aes(x = d_cod, y = as.numeric(delayed_fn != 1))) +
+  # Adds the actual raw data points spread out slightly to see density
+  geom_jitter(height = 0.03, width = 0.2, alpha = 0.3, size = 1) + 
+  # Calculates and plots the mean and 95% CI from the data
+  stat_summary(fun.data = "mean_cl_boot", color = "blue", size = 1) + 
+  labs(title = "Donor Risk Cause of Death Outcome on Delayed Function",
+       x = "Donor Cause of Death",
+       y = "Predicted Probability of Delayed Function") 
+
+```
+
+```{r}
+#| echo: false
+#| error: false
+#| warning: false
+library(ggplot2)
+library(ggplot2)
+
+DonorHyperglycemia <- DonorHyperglycemia[!is.na(DonorHyperglycemia$d_caucasian),]
+
+# 1. Fit the logistic regression model using your dataset
+model <- glm(as.numeric(delayed_fn) ~ as.numeric(d_caucasian), 
+             data = DonorHyperglycemia, 
+             family = binomial(link = "logit"))
+
+# 2. Generate predicted probabilities for both groups
+pred_data <- data.frame(d_caucasian = c(0, 1))
+predictions <- predict(model, 
+                       newdata = data.frame(d_caucasian = pred_data$d_caucasian), 
+                       type = "link", 
+                       se.fit = TRUE)
+
+# Apply inverse logit transformation
+pred_data$prob  <- 1 / (1 + exp(-predictions$fit))
+pred_data$lower <- 1 / (1 + exp(-(predictions$fit - 1.96 * predictions$se.fit)))
+pred_data$upper <- 1 / (1 + exp(-(predictions$fit + 1.96 * predictions$se.fit)))
+
+# 3. Plot with original aesthetics and the raw data dots
+ggplot() +
+  # Draw the raw data dots (with jitter to prevent overplotting)
+  geom_jitter(data = DonorHyperglycemia, 
+              aes(x = factor(d_caucasian), y = as.numeric(delayed_fn)),
+              alpha = 0.4, color = "black", height = 0.03, width = 0.2) +
+  
+  # Draw the modeled probability points
+  geom_point(data = pred_data, 
+             aes(x = factor(d_caucasian), y = prob), 
+             size = 4, color = "blue") +
+  
+  # Draw the modeled probability confidence intervals
+  geom_linerange(data = pred_data, 
+                aes(x = factor(d_caucasian), ymin = lower, ymax = upper), 
+                width = 0.1, color = "blue", linewidth = 0.5) +
+                
+  # Matching your original plot aesthetics
+  scale_y_continuous(limits = c(-0.05, 1.05), breaks = seq(0, 1, 0.25)) +
+  scale_x_discrete(labels = c("0" = "Caucasian", "1" = "Not Caucasian")) +
+  labs(
+    title = "Predicted Probability of Donor Race on Delayed Function",
+    x = "Race: Caucasian or Not",
+    y = "Predicted Probability of Delayed Function"
+  ) 
+
+```
+```{r}
+#| echo: false
+#| error: false
+#| warning: false
+library(ggplot2)
+ggplot(DonorHyperglycemia, aes(x = d_age, y = as.numeric(delayed_fn))) +
+  geom_point(alpha = 0.5) +  
   stat_smooth(method = "glm", 
               method.args = list(family = "binomial"), 
-              se = TRUE) +
-  scale_x_continuous(breaks = 1:4, labels = c("CVA" , "Head Trauma", "Anoxia" , "Other")) + 
-  labs(title = "Effect of Donor Risk (d_cod) on Delayed Function",
-       x = "Donor COD Level (1 = Reference)",
+              se = TRUE) +   
+  labs(title = "Predicted Outcome of Donor Age on Delayed Function",
+       x = "Donor Age",
        y = "Predicted Probability of Delayed Function")
 ```
 ```{r}
@@ -120,18 +200,46 @@ ggplot(DonorHyperglycemia, aes(x = as.numeric(d_cod), y = as.numeric(delayed_fn 
 #| error: false
 #| warning: false
 library(ggplot2)
-ggplot(DonorHyperglycemia, aes(x = d_cod, y = as.numeric(delayed_fn) - 1)) +
-  geom_jitter(alpha = 0.5, height = 0.05, width = 0.2) +  
-  stat_smooth(aes(group = 1), 
-              method = "glm", 
-              method.args = list(family = "binomial"), 
-              se = TRUE) +   
-  
-  labs(title = "Effect of Donor Risk on Delayed Function",
-       x = "Cause of Death",
-       y = "Predicted Probability of Delayed Function")
+library(ggplot2)
+
+DonorHyperglycemia <- DonorHyperglycemia[!is.na(DonorHyperglycemia$d_caucasian),]
+
+# 1. Fit the logistic regression model using your dataset
+model <- glm(as.numeric(delayed_fn) ~ as.numeric(d_genderf), 
+             data = DonorHyperglycemia, 
+             family = binomial(link = "logit"))
+
+# 2. Generate predicted probabilities for both groups
+pred_data1 <- data.frame(d_genderf = c(0, 1))
+predictions1 <- predict(model, 
+                       newdata = data.frame(d_genderf = pred_data1$d_genderf), 
+                       type = "link", 
+                       se.fit = TRUE)
+pred_data1$prob  <- 1 / (1 + exp(-predictions$fit))
+pred_data1$lower <- 1 / (1 + exp(-(predictions$fit - 1.96 * predictions$se.fit)))
+pred_data1$upper <- 1 / (1 + exp(-(predictions$fit + 1.96 * predictions$se.fit)))
+
+ggplot() +
+  geom_jitter(data = DonorHyperglycemia, 
+              aes(x = factor(d_genderf), y = as.numeric(delayed_fn)),
+              alpha = 0.4, color = "black", height = 0.03, width = 0.2) +
+  geom_point(data = pred_data1, 
+             aes(x = factor(d_genderf), y = prob), 
+             size = 4, color = "blue") +
+  geom_linerange(data = pred_data1, 
+                aes(x = factor(d_genderf), ymin = lower, ymax = upper), 
+                width = 0.1, color = "blue", linewidth = 0.5) +
+                
+  scale_y_continuous(limits = c(-0.05, 1.05), breaks = seq(0, 1, 0.25)) +
+  scale_x_discrete(labels = c("0" = "Male", "1" = "Female")) +
+  labs(
+    title = "Predicted Probability of Donor Gender on Delayed Function",
+    x = "Gender: Male vs Female",
+    y = "Predicted Probability of Delayed Function"
+  )
 ```
 
 ## Discussion
 
+Out of all the variables we tested, we only found evidence of one statistically significant relationship, that being the one between donor risk index number and delayed liver graft function. The p-values of all of the other variables we tested were above our significance level of 0.05. However, this may be because some of the variables we tested, such as gender and race, have little direct relationships with liver function. This is especially apparent in the fact that our variable for race was binary, with the only categories being “caucasian” and “not caucasian,” which could be considered biased and reductive. Overall, the scope of our tests may have been limited by our lack of other donor-related variables. Our testing could have been strengthened by having other donor variables, specifically those that are used in calculating the donor risk index, such as history of diabetes, history of hypertension, and donation after circulatory death (DCD) status. Nonetheless, without being able to test for all of the variables used to calculate DRI, our ability to come to conclusions about which of those variables have statistically significant relationships with delayed liver graft function is extremely limited.
 
