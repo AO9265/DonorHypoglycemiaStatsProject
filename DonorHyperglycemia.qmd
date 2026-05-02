@@ -86,35 +86,22 @@ kable(my_table,
 
 **Interpretation:**
 
-The intercept term -2.106469, representing the log odds of a recipient experiencing delayed liver graft function from a non-white male donor of age zero who's cause of death was cerebrovascular accident, is not a relevant real-world scenario. 
+The intercept term -2.106469, representing the log odds of a recipient experiencing delayed liver graft function from a non-caucasian male donor of age zero who's cause of death was cerebrovascular accident, is not a relevant real-world scenario. 
 
 Donor Age: This model predicts a recipients log odds of having delayed liver graft function to decrease by 0.005237 given a one year increase in age of their donor, while controlling for all other variables. In other words, the recipient is predicted to have 0.9947767 times the odds of experiencing delayed liver graft function given a one year increase in age of their donor, while controlling for all other variables. The corresponding p-value for this coefficient, the probability of seeing this predicted change in log odds for a one year change in age given that the true population change in log odds is zero, is 0.528224. Evaluated against the significance level of 0.05, we fail to reject the null hypothesis that the true slope value is zero. We do not have sufficient statistical evidence to support there being an association between donor age and delayed liver graft function.
 
 Donor Cause of Death: This model predicts a recipients log odds of having delayed liver graft function to change by -0.312951 if the donor's cause of death was head trauma, -0.255460 if the donor's cause of death was anoxia, and 0.763904 if the donor died of some other cause, compared to a recipient who's donor died of cerebrovascular accident, while controlling for all other variables. The recipient is predicted to have 0.7312857, 0.7745601, or 2.14664 times the odds of experiencing delayed liver graft function given the donor cause of death was head trauma, anoxia, or other, respectively. The corresponding p-value for this coefficient, the probability of seeing this predicted change in log odds given that donor cause of death does not truly change the log odds, are 0.528224, 0.300045, and 0.176776, respectively. Evaluated against the significance level of 0.05, we fail to reject the null hypothesis that the true slope value is zero. We do not have sufficient statistical evidence to support there being an association between donor cause of death and delayed liver graft function. 
 
-Donor Whiteness: This model predicts a recipients log odds of having delayed liver graft function to be 0.013151 lower for patients with caucasian donors compared to patients with non-caucasian donors, while controlling for all other variables. In other words, the recipient is predicted to have 0.9869351 times the odds of experiencing delayed liver graft function if their donor is caucasian versus non-caucasian, while controlling for all other variables. The corresponding p-value for this coefficient, the probability of seeing this predicted change in log odds of delayed liver graft function for caucasian donors given that the true population difference in log odds is zero, is 0.961797. Evaluated against the significance level of 0.05, we fail to reject the null hypothesis that the true slope value is zero. We do not have sufficient statistical evidence to support there being an association between donor gender and delayed liver graft function.
+Donor Caucasian Race: This model predicts a recipients log odds of having delayed liver graft function to be 0.013151 lower for patients with caucasian donors compared to patients with non-caucasian donors, while controlling for all other variables. In other words, the recipient is predicted to have 0.9869351 times the odds of experiencing delayed liver graft function if their donor is caucasian versus non-caucasian, while controlling for all other variables. The corresponding p-value for this coefficient, the probability of seeing this predicted change in log odds of delayed liver graft function for caucasian donors given that the true population difference in log odds is zero, is 0.961797. Evaluated against the significance level of 0.05, we fail to reject the null hypothesis that the true slope value is zero. We do not have sufficient statistical evidence to support there being an association between donor gender and delayed liver graft function.
 
-Donor Gender: This model predicts a recipients log odds of having delayed liver graft function to be 0.094485 lower for patients with female donors compared to patients with male donors, while controlling for all other variables. In other words, the recipient is predicted to have 0.9098414 times the odds of experiencing delayed liver graft function if their donor is female versus male, while controlling for all other variables. The corresponding p-value for this coefficient, the probability of seeing this predicted change in log odds of delayed liver graft function for female donors given that the true population difference in log odds is zero, is 0.702822. Evaluated against the significance level of 0.05, we fail to reject the null hypothesis that the true slope value is zero. We do not have sufficient statistical evidence to support there being an association between donor whiteness and delayed liver graft function.
+Donor Gender: This model predicts a recipients log odds of having delayed liver graft function to be 0.094485 lower for patients with female donors compared to patients with male donors, while controlling for all other variables. In other words, the recipient is predicted to have 0.9098414 times the odds of experiencing delayed liver graft function if their donor is female versus male, while controlling for all other variables. The corresponding p-value for this coefficient, the probability of seeing this predicted change in log odds of delayed liver graft function for female donors given that the true population difference in log odds is zero, is 0.702822. Evaluated against the significance level of 0.05, we fail to reject the null hypothesis that the true slope value is zero. We do not have sufficient statistical evidence to support there being an association between donor caucasian race and delayed liver graft function.
 
 Donor Risk Index: This model predicts a recipients log odds of having delayed liver graft function to be 1.046880 higher given a one unit change in donor risk index, while controlling for all other variables. In other words, the recipient is predicted to have 2.848749 times the odds of experiencing delayed liver graft function given a one unit change in donor risk index, while controlling for all other variables. The corresponding p-value for this coefficient, the probability of seeing this predicted change in log odds of delayed liver graft function given that the true population slope in log odds is zero, is 0.009538. Evaluated against the significance level of 0.05, we reject the null hypothesis that the true slope value is zero. There is sufficient statistical evidence to support there being an association between donor risk index and delayed liver graft function.
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 **Model 1: Donor Risk Index**
-
-This model displays the probability of the binary outcome of Delayed Liver Graph Function based on the continuous predictor: Donor Risk Index.  A positive correlation is shown where as the Donor Risk Index score of the donor increases, the probability of delayed liver graft function increases as well. As the data range is narrow on the y-axis, the graph does not appear with the typical “s” logistic curve as the graph represents the nearly linear middle segment. The shaded region represents the 95% confidence interval for the fitted regression curve. The baseline risk for the younger donors is > 15% this displays evidence that age is not the only factor affecting delayed liver graft function.
 ```{r}
 #| echo: false
 #| error: false
@@ -130,10 +117,12 @@ ggplot(DonorHyperglycemia, aes(x = donorrisk, y = as.numeric(delayed_fn))) +
        x = "Donor Risk Index",
        y = "Predicted Probability of Delayed Function")
 ```
+This model displays the probability of the binary outcome of Delayed Liver Graph Function based on the continuous predictor: Donor Risk Index.  A positive correlation is shown where as the Donor Risk Index score of the donor increases, the probability of delayed liver graft function increases as well. As the data range is narrow on the y-axis, the graph does not appear with the typical “s” logistic curve as the graph represents the nearly linear middle segment. The shaded region represents the 95% confidence interval for the fitted regression curve. The baseline risk for the younger donors is > 15% this displays evidence that age is not the only factor affecting delayed liver graft function.
 
-**Model 3: Cause of death**
-This model displays the probability of the binary outcome of Delayed Liver Graph Function based on the categorical predictor of cause of death using categories; 1,2,3 or 4. The blue point represents the log-odds outcome converted into a probability bound between 0-1. Donors who died of Anoxia and Head trauma had the highest predicted probabilities of delayed liver graft function in recipients, with the lowest probability being the “other” / “4” category. The vertical blue line represents the 95% confidence interval around the predicted probabilities. There is overlap between all four intervals, which shows that the donor's cause of death has no statistical significance on delayed graft function. The categories of cause of death are discrete, so a continuous logistic line was not used to avoid making predictions between 0-1 1-2, 2-3, and 3-4 that had no real-world significance.
 
+
+
+**Model 2: Cause of death**
 ```{r}
 #| echo: false
 #| error: false
@@ -156,11 +145,12 @@ ggplot(subset(DonorHyperglycemia, !is.na(d_cod) & !is.na(delayed_fn)), aes(x = d
        y = "Predicted Probability of Delayed Function") 
 
 ```
+This model displays the probability of the binary outcome of Delayed Liver Graph Function based on the categorical predictor of cause of death using categories; 1,2,3 or 4. The blue point represents the log-odds outcome converted into a probability bound between 0-1. Donors who died of Anoxia and Head trauma had the highest predicted probabilities of delayed liver graft function in recipients, with the lowest probability being the “other” / “4” category. The vertical blue line represents the 95% confidence interval around the predicted probabilities. There is overlap between all four intervals, which shows that the donor's cause of death has no statistical significance on delayed graft function. The categories of cause of death are discrete, so a continuous logistic line was not used to avoid making predictions between 0-1 1-2, 2-3, and 3-4 that had no real-world significance.
+
+
+
 
 **Model 3: Donor Race**
-
-This model displays the probability of the binary outcome of Delayed Liver Graph Function based on the binary predictor of gender, delegated as; Male (0) or Female (1). The blue point represents the estimated log-odds outcome converted into an average probability bound between 0-1. The variance between the probability of delayed liver graft function in male groups vs. female groups is minimal. The vertical blue line represents the 95% confidence interval around the predicted probabilities. The intervals overlap, which in addition to the high p-value shown in the logistic regression model summary, is evidence that the donor's biological sex has no statistical significance on delayed graft function. The categories of race are discrete, so a continuous logistic line was not used to avoid making predictions between 0 and 1 that had no real-world significance.
-
 ```{r}
 #| echo: false
 #| error: false
@@ -214,11 +204,12 @@ ggplot() +
   ) 
 
 ```
+This model displays the probability of the binary outcome of Delayed Liver Graph Function based on the binary predictor of gender, delegated as; Male (0) or Female (1). The blue point represents the estimated log-odds outcome converted into an average probability bound between 0-1. The variance between the probability of delayed liver graft function in male groups vs. female groups is minimal. The vertical blue line represents the 95% confidence interval around the predicted probabilities. The intervals overlap, which in addition to the high p-value shown in the logistic regression model summary, is evidence that the donor's biological sex has no statistical significance on delayed graft function. The categories of race are discrete, so a continuous logistic line was not used to avoid making predictions between 0 and 1 that had no real-world significance.
+
+
+
 
 **Model 4: Donor Age**
-
-This model displays the probability of the binary outcome of Delayed Liver Graph Function based on the continuous numeric predictor: Age (in years)  A weak positive correlation is shown where as the age of the donor increases,the probability of delayed liver graft function increases slightly. This modest correlation is evidence that the effect of age alone on delayed graft function is small (from ages 0-80 the probability only increases by 10% over the whole lifetime). Similarly to the Donor Risk Index data, the range is even more narrow on the y-axis, so the graph does not appear with the “s” logistic curve as the graph represents the nearly linear middle segment. The shaded region represents the 95% confidence interval for the fitted regression curve. The baseline risk for the younger donors is also  > 15%: age is not the only factor affecting delayed liver graft function.
-
 ```{r}
 #| echo: false
 #| error: false
@@ -233,11 +224,12 @@ ggplot(DonorHyperglycemia, aes(x = d_age, y = as.numeric(delayed_fn))) +
        x = "Donor Age",
        y = "Predicted Probability of Delayed Function")
 ```
+This model displays the probability of the binary outcome of Delayed Liver Graph Function based on the continuous numeric predictor: Age (in years)  A weak positive correlation is shown where as the age of the donor increases,the probability of delayed liver graft function increases slightly. This modest correlation is evidence that the effect of age alone on delayed graft function is small (from ages 0-80 the probability only increases by 10% over the whole lifetime). Similarly to the Donor Risk Index data, the range is even more narrow on the y-axis, so the graph does not appear with the “s” logistic curve as the graph represents the nearly linear middle segment. The shaded region represents the 95% confidence interval for the fitted regression curve. The baseline risk for the younger donors is also  > 15%: age is not the only factor affecting delayed liver graft function.
+
+
+
 
 **Model 5: Race: Caucasian or Not**
-
-This model displays the probability of the binary outcome of Delayed Liver Graph Function based on the binary predictor of race, delegated as; Caucasian(0) or Not Caucasian(1). The blue points representing the average probability are aligned with each other at ~ 25%. This  shows there is no statistical difference between the probability of delayed liver graft function between caucasian groups and non-caucasian groups. The vertical blue line represents the 95% confidence interval around the predicted probabilities. The intervals overlap in this model, showing low statistical significance. The categories of race are discrete, so a continuous logistic line was not used to avoid making predictions between x values 0 and 1 that hold no real-world significance.
-
 ```{r}
 #| echo: false
 #| error: false
@@ -281,6 +273,7 @@ ggplot() +
     y = "Predicted Probability of Delayed Function"
   )
 ```
+This model displays the probability of the binary outcome of Delayed Liver Graph Function based on the binary predictor of race, delegated as; Caucasian(0) or Not Caucasian(1). The blue points representing the average probability are aligned with each other at ~ 25%. This  shows there is no statistical difference between the probability of delayed liver graft function between caucasian groups and non-caucasian groups. The vertical blue line represents the 95% confidence interval around the predicted probabilities. The intervals overlap in this model, showing low statistical significance. The categories of race are discrete, so a continuous logistic line was not used to avoid making predictions between x values 0 and 1 that hold no real-world significance.
 
 ## Discussion
 
